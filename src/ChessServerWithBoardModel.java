@@ -9,7 +9,7 @@ class ChessServer {
         ExecutorService pool = Executors.newCachedThreadPool(); // Supports multiple players dynamically
         ChessGame game = new ChessGame(); // Game logic
         
-        try (ServerSocket serverSocket = new ServerSocket(0)) { // Auto-select available port
+        try (ServerSocket serverSocket = new ServerSocket(5000)) { // Auto-select available port
             System.out.println("Chess Server started on port: " + serverSocket.getLocalPort());
             
             while (true) {
@@ -39,6 +39,9 @@ class ClientHandler implements Runnable {
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             Scanner scanner = new Scanner(System.in);
+            //wait for 2 clients to connect before starting the game
+
+            System.out.println("game started");
             
             while (true) {
                 synchronized (game) {
@@ -126,7 +129,8 @@ class ChessGame {
 
 class ChessClient {
     public static void main(String[] args) {
-        try (Socket socket = new Socket("localhost", 5000)) {
+        try {
+            Socket socket = new Socket("localhost", 5000);
             System.out.println("Connected to Chess Server.");
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
