@@ -27,7 +27,7 @@ class ChessServer {
 class ClientHandler implements Runnable {
     private Socket socket;
     private ChessGame game;
-    
+
     public ClientHandler(Socket socket, ChessGame game) {
         this.socket = socket;
         this.game = game;
@@ -122,3 +122,30 @@ class ChessGame {
 }
 
 
+
+
+class ChessClient {
+    public static void main(String[] args) {
+        try (Socket socket = new Socket("localhost", 5000)) {
+            System.out.println("Connected to Chess Server.");
+            BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+            Scanner scanner = new Scanner(System.in);
+
+            while (true) {
+                System.out.print("Your move: ");
+                String move = scanner.nextLine();
+                out.println(move);
+                if (move.equals("exit")) break;
+
+                String serverMove = in.readLine();
+                if (serverMove == null || serverMove.equals("exit")) break;
+                System.out.println("Opponent moved: " + serverMove);
+            }
+
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
